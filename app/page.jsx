@@ -8,9 +8,9 @@ import DownloadBar from '@/components/DownloadBar'
 import { generateCertificate } from '@/lib/generateCertificate'
 
 const STEPS = [
-  { id: 1, label: 'Upload CSV', icon: '📄' },
-  { id: 2, label: 'Configure Event', icon: '⚙️' },
-  { id: 3, label: 'Preview & Download', icon: '🎓' },
+  { id: 1, label: 'Upload CSV', icon: '01' },
+  { id: 2, label: 'Configure Event', icon: '02' },
+  { id: 3, label: 'Preview & Download', icon: '03' },
 ]
 
 export default function Home() {
@@ -62,30 +62,66 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 flex flex-col">
-      {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-950/80 backdrop-blur-md sticky top-0 z-40">
+    <div
+      className="min-h-screen flex flex-col relative"
+      style={{ backgroundColor: '#0a0000' }}
+    >
+      {/* Ambient red glow — top left */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0"
+        style={{
+          background:
+            'radial-gradient(ellipse 60% 50% at 0% 0%, rgba(160,0,0,0.22) 0%, transparent 70%)',
+        }}
+      />
+
+      {/* ─── HEADER ─── */}
+      <header
+        className="relative z-40 sticky top-0"
+        style={{
+          background: 'rgba(8,0,0,0.92)',
+          borderBottom: '1px solid rgba(180,0,0,0.3)',
+          backdropFilter: 'blur(14px)',
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent leading-tight">
-              Awaara Run Club — Certificate Generator
-            </h1>
-            <p className="text-gray-400 text-sm mt-0.5">
-              Built by <span className="text-orange-400 font-medium">Aditya Kumar</span>
-              {' · '}
-              <a href="mailto:adityakumar8303000000@gmail.com" className="text-gray-300 hover:text-orange-400 transition-colors">
-                adityakumar8303000000@gmail.com
-              </a>
-            </p>
+          <div className="flex items-center gap-4">
+            {/* Red accent stripe */}
+            <div className="hidden sm:block w-1 h-10 bg-red-700 flex-shrink-0" />
+            <div>
+              <h1
+                className="text-lg sm:text-xl font-black tracking-widest uppercase text-white leading-tight"
+                style={{ fontFamily: '"Barlow Condensed", sans-serif', letterSpacing: '0.14em' }}
+              >
+                Awaara Run Club
+                <span className="text-red-600 mx-2">/</span>
+                <span className="text-red-500">Certificate Generator</span>
+              </h1>
+              <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                Built by{' '}
+                <span className="text-red-400 font-semibold">Aditya Kumar Singh</span>
+                {' · '}
+                <a
+                  href="mailto:aditya.kr.singh0306@gmail.com"
+                  className="hover:text-red-400 transition-colors"
+                  style={{ color: 'rgba(255,255,255,0.5)' }}
+                >
+                  aditya.kr.singh0306@gmail.com
+                </a>
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500 hidden sm:block">100% browser-based · No data leaves your device</span>
-          </div>
+          <span
+            className="text-xs tracking-widest uppercase hidden sm:block"
+            style={{ color: 'rgba(255,255,255,0.25)', letterSpacing: '0.2em' }}
+          >
+            100% browser-based · No data leaves your device
+          </span>
         </div>
       </header>
 
-      {/* Step Indicator */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4 w-full">
+      {/* ─── STEP INDICATOR ─── */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4 w-full">
         <div className="flex items-center justify-center gap-0">
           {STEPS.map((s, idx) => (
             <div key={s.id} className="flex items-center">
@@ -95,43 +131,91 @@ export default function Home() {
                     setStep(s.id)
                   }
                 }}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
-                  step === s.id
-                    ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30'
-                    : step > s.id
-                    ? 'bg-gray-800 text-green-400 cursor-pointer hover:bg-gray-700'
-                    : 'bg-gray-900 text-gray-500 cursor-not-allowed'
-                }`}
+                className="flex items-center gap-2.5 px-4 py-2 text-xs font-bold tracking-widest uppercase transition-all duration-300"
+                style={{
+                  fontFamily: '"Barlow Condensed", sans-serif',
+                  letterSpacing: '0.18em',
+                  fontSize: '11px',
+                  color:
+                    step === s.id
+                      ? '#ffffff'
+                      : step > s.id
+                        ? '#cc0000'
+                        : 'rgba(255,255,255,0.25)',
+                  cursor:
+                    s.id < step || (s.id === 2 && participants.length > 0)
+                      ? 'pointer'
+                      : step === s.id
+                        ? 'default'
+                        : 'not-allowed',
+                  borderBottom:
+                    step === s.id
+                      ? '2px solid #cc0000'
+                      : '2px solid transparent',
+                  paddingBottom: '6px',
+                }}
               >
-                <span className="text-base">{step > s.id ? '✓' : s.icon}</span>
+                <span
+                  style={{
+                    color: step === s.id ? '#cc0000' : step > s.id ? '#cc0000' : 'rgba(255,255,255,0.2)',
+                    fontFamily: 'monospace',
+                    fontSize: '10px',
+                  }}
+                >
+                  {step > s.id ? '✓' : `[${s.icon}]`}
+                </span>
                 <span className="hidden sm:block">{s.label}</span>
                 <span className="sm:hidden">Step {s.id}</span>
               </button>
               {idx < STEPS.length - 1 && (
-                <div className={`w-8 h-0.5 mx-1 transition-colors duration-300 ${step > s.id ? 'bg-orange-500' : 'bg-gray-700'}`} />
+                <div
+                  className="w-10 h-px mx-1"
+                  style={{
+                    background: step > s.id ? '#cc0000' : 'rgba(255,255,255,0.1)',
+                  }}
+                />
               )}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+      {/* ─── MAIN CONTENT ─── */}
+      <main className="relative z-10 flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
 
         {/* Step 1: Upload CSV */}
         {step === 1 && (
           <div className="animate-slide-up">
             <div className="max-w-2xl mx-auto">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-white mb-2">Upload Participant List</h2>
-                <p className="text-gray-400">Upload a CSV file with your participants' names, bib numbers, and race categories.</p>
+              <div className="mb-8">
+                <p
+                  className="text-xs tracking-widest uppercase mb-2"
+                  style={{ color: '#cc0000', fontFamily: '"Barlow Condensed", sans-serif', letterSpacing: '0.2em' }}
+                >
+                  [ Step 01 ]
+                </p>
+                <h2
+                  className="text-4xl sm:text-5xl font-black uppercase text-white leading-none"
+                  style={{ fontFamily: '"Barlow Condensed", sans-serif' }}
+                >
+                  Upload Participant List
+                </h2>
+                <p className="mt-3 text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                  Upload a CSV file with your participants' names, bib numbers, and race categories.
+                </p>
               </div>
               <CSVUploader onParsed={handleParticipantsParsed} />
               {participants.length > 0 && (
                 <div className="mt-6 flex justify-center">
                   <button
                     onClick={() => setStep(2)}
-                    className="px-8 py-3 bg-orange-500 hover:bg-orange-400 text-white rounded-xl font-bold text-lg shadow-lg shadow-orange-500/30 hover:shadow-orange-400/40 transition-all duration-200 hover:scale-105 active:scale-95"
+                    className="group relative px-10 py-3 font-black text-sm tracking-widest uppercase text-white transition-all duration-200 hover:scale-105 active:scale-95"
+                    style={{
+                      fontFamily: '"Barlow Condensed", sans-serif',
+                      letterSpacing: '0.2em',
+                      background: '#cc0000',
+                      clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
+                    }}
                   >
                     Continue to Configure →
                   </button>
@@ -145,48 +229,103 @@ export default function Home() {
         {step === 2 && (
           <div className="animate-slide-up">
             <div className="max-w-3xl mx-auto">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-white mb-2">Configure Your Event</h2>
-                <p className="text-gray-400">Customize the certificate details and choose a template style.</p>
+              <div className="mb-8">
+                <p
+                  className="text-xs tracking-widest uppercase mb-2"
+                  style={{ color: '#cc0000', fontFamily: '"Barlow Condensed", sans-serif', letterSpacing: '0.2em' }}
+                >
+                  [ Step 02 ]
+                </p>
+                <h2
+                  className="text-4xl sm:text-5xl font-black uppercase text-white leading-none"
+                  style={{ fontFamily: '"Barlow Condensed", sans-serif' }}
+                >
+                  Configure Your Event
+                </h2>
+                <p className="mt-3 text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                  Customize the certificate details and choose a template style.
+                </p>
               </div>
               <EventConfigForm config={eventConfig} onChange={setEventConfig} />
 
               <div className="mt-8">
                 {isGenerating ? (
-                  <div className="bg-gray-900 rounded-2xl border border-gray-800 p-6">
+                  <div
+                    className="p-6"
+                    style={{
+                      background: 'rgba(12,0,0,0.9)',
+                      border: '1px solid rgba(204,0,0,0.3)',
+                    }}
+                  >
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-gray-300 font-medium">
+                      <span
+                        className="text-sm font-bold tracking-widest uppercase"
+                        style={{ fontFamily: '"Barlow Condensed", sans-serif', color: 'rgba(255,255,255,0.7)', letterSpacing: '0.15em' }}
+                      >
                         Generating {participants.length} certificates...
                       </span>
-                      <span className="text-orange-400 font-bold">{generationProgress}%</span>
+                      <span className="font-black text-red-500" style={{ fontFamily: '"Barlow Condensed", sans-serif' }}>
+                        {generationProgress}%
+                      </span>
                     </div>
-                    <div className="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
+                    <div
+                      className="w-full h-1.5 overflow-hidden"
+                      style={{ background: 'rgba(255,255,255,0.07)' }}
+                    >
                       <div
-                        className="bg-gradient-to-r from-orange-500 to-orange-400 h-3 rounded-full transition-all duration-300"
-                        style={{ width: `${generationProgress}%` }}
+                        className="h-full transition-all duration-300"
+                        style={{ width: `${generationProgress}%`, background: '#cc0000' }}
                       />
                     </div>
-                    <p className="text-gray-500 text-sm mt-3 text-center">Please wait while we render each certificate on canvas…</p>
+                    <p
+                      className="text-xs mt-3 text-center tracking-widest uppercase"
+                      style={{ color: 'rgba(255,255,255,0.3)', letterSpacing: '0.15em' }}
+                    >
+                      Please wait while we render each certificate on canvas…
+                    </p>
                   </div>
                 ) : (
                   <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
                     <button
                       onClick={() => setStep(1)}
-                      className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl font-semibold transition-all duration-200 w-full sm:w-auto"
+                      className="px-6 py-3 font-bold text-xs tracking-widest uppercase transition-all duration-200 w-full sm:w-auto"
+                      style={{
+                        fontFamily: '"Barlow Condensed", sans-serif',
+                        letterSpacing: '0.2em',
+                        background: 'rgba(255,255,255,0.06)',
+                        border: '1px solid rgba(255,255,255,0.12)',
+                        color: 'rgba(255,255,255,0.5)',
+                      }}
                     >
                       ← Back
                     </button>
                     <div className="text-center">
-                      <p className="text-gray-500 text-sm mb-2">{participants.length} participants loaded</p>
+                      <p
+                        className="text-xs mb-3 tracking-widest uppercase"
+                        style={{ color: 'rgba(255,255,255,0.3)', letterSpacing: '0.15em' }}
+                      >
+                        {participants.length} participants loaded
+                      </p>
                       <button
                         onClick={handleGenerate}
                         disabled={!eventConfig.eventName || !eventConfig.eventDate}
-                        className="px-10 py-4 bg-orange-500 hover:bg-orange-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-xl font-bold text-lg shadow-lg shadow-orange-500/30 hover:shadow-orange-400/40 transition-all duration-200 hover:scale-105 active:scale-95 disabled:scale-100 disabled:shadow-none"
+                        className="px-12 py-4 font-black text-sm tracking-widest uppercase text-white transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed disabled:scale-100"
+                        style={{
+                          fontFamily: '"Barlow Condensed", sans-serif',
+                          letterSpacing: '0.2em',
+                          background: !eventConfig.eventName || !eventConfig.eventDate ? 'rgba(100,0,0,0.4)' : '#cc0000',
+                          clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))',
+                        }}
                       >
                         🎓 Generate Certificates
                       </button>
                       {(!eventConfig.eventName || !eventConfig.eventDate) && (
-                        <p className="text-amber-500 text-xs mt-2">Please fill in Event Name and Date to continue</p>
+                        <p
+                          className="text-xs mt-2 tracking-wider"
+                          style={{ color: 'rgba(255,180,0,0.7)', letterSpacing: '0.05em' }}
+                        >
+                          Please fill in Event Name and Date to continue
+                        </p>
                       )}
                     </div>
                   </div>
@@ -199,9 +338,23 @@ export default function Home() {
         {/* Step 3: Preview & Download */}
         {step === 3 && (
           <div className="animate-slide-up pb-28">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-2">Your Certificates Are Ready! 🎉</h2>
-              <p className="text-gray-400">
+            <div className="mb-8">
+              <p
+                className="text-xs tracking-widest uppercase mb-2"
+                style={{ color: '#cc0000', fontFamily: '"Barlow Condensed", sans-serif', letterSpacing: '0.2em' }}
+              >
+                [ Step 03 ]
+              </p>
+              <h2
+                className="text-4xl sm:text-5xl font-black uppercase text-white leading-none"
+                style={{ fontFamily: '"Barlow Condensed", sans-serif' }}
+              >
+                Your Certificates Are Ready!
+              </h2>
+              <p
+                className="mt-3 text-sm"
+                style={{ color: 'rgba(255,255,255,0.4)' }}
+              >
                 {certificates.length} certificates generated · Click to download individually or get all as a ZIP
               </p>
             </div>
@@ -211,13 +364,27 @@ export default function Home() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-800 bg-gray-950 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      {/* ─── FOOTER ─── */}
+      <footer
+        className="relative z-10 mt-auto"
+        style={{
+          background: 'rgba(5,0,0,0.95)',
+          borderTop: '1px solid rgba(180,0,0,0.2)',
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-center sm:text-left">
-            <p className="text-gray-400 text-sm">© 2025 Awaara Run Club</p>
-            <p className="text-gray-600 text-xs mt-0.5">
-              Built by Aditya Kumar · adityakumar8303000000@gmail.com
+            <p
+              className="text-xs tracking-widest uppercase"
+              style={{ color: 'rgba(255,255,255,0.35)', letterSpacing: '0.18em' }}
+            >
+              © 2025 Awaara Run Club
+            </p>
+            <p
+              className="text-xs mt-0.5"
+              style={{ color: 'rgba(255,255,255,0.2)' }}
+            >
+              Built by Aditya Kumar Singh· aditya.kr.singh0306@gmail.com
             </p>
           </div>
           <a
@@ -225,7 +392,13 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
             id="built-for-digital-heroes-btn"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-orange-500 hover:bg-orange-400 text-white rounded-xl font-bold shadow-lg shadow-orange-500/25 hover:shadow-orange-400/35 transition-all duration-200 hover:scale-105 active:scale-95 text-sm"
+            className="inline-flex items-center gap-2 px-7 py-3 text-xs font-black tracking-widest uppercase text-white transition-all duration-200 hover:scale-105 active:scale-95"
+            style={{
+              fontFamily: '"Barlow Condensed", sans-serif',
+              letterSpacing: '0.2em',
+              background: '#cc0000',
+              clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
+            }}
           >
             🚀 Built for Digital Heroes
           </a>

@@ -4,10 +4,10 @@ import { useState, useRef, useCallback } from 'react'
 import Papa from 'papaparse'
 
 export default function CSVUploader({ onParsed }) {
-  const [isDragging, setIsDragging] = useState(false)
-  const [status, setStatus] = useState('idle') // idle | success | error
-  const [message, setMessage] = useState('')
-  const [participants, setParticipants] = useState([])
+  const [isDragging,    setIsDragging]    = useState(false)
+  const [status,        setStatus]        = useState('idle') // idle | success | error
+  const [message,       setMessage]       = useState('')
+  const [participants,  setParticipants]  = useState([])
   const fileInputRef = useRef(null)
 
   const processFile = useCallback((file) => {
@@ -19,7 +19,7 @@ export default function CSVUploader({ onParsed }) {
     }
 
     Papa.parse(file, {
-      header: true,
+      header:        true,
       skipEmptyLines: true,
       dynamicTyping: true,
       complete: (results) => {
@@ -37,10 +37,9 @@ export default function CSVUploader({ onParsed }) {
           return
         }
 
-        // Normalize and validate each row
         const processed = rawData
           .map((row, idx) => ({
-            name: (row.name || '').toString().trim(),
+            name:       (row.name || '').toString().trim(),
             bib_number: row.bib_number
               ? row.bib_number.toString().trim()
               : String(idx + 1).padStart(3, '0'),
@@ -56,10 +55,10 @@ export default function CSVUploader({ onParsed }) {
 
         if (processed.length > 200) {
           setStatus('success')
-          setMessage(`⚠️ ${processed.length} participants loaded. Large batches may take a moment to generate.`)
+          setMessage(`⚠ ${processed.length} participants loaded. Large batches may take a moment.`)
         } else {
           setStatus('success')
-          setMessage(`✓ ${processed.length} participant${processed.length !== 1 ? 's' : ''} loaded successfully`)
+          setMessage(`${processed.length} participant${processed.length !== 1 ? 's' : ''} loaded`)
         }
 
         setParticipants(processed)
@@ -72,39 +71,48 @@ export default function CSVUploader({ onParsed }) {
     })
   }, [onParsed])
 
-  const handleDrop = useCallback((e) => {
-    e.preventDefault()
-    setIsDragging(false)
-    const file = e.dataTransfer.files[0]
-    processFile(file)
-  }, [processFile])
-
-  const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true) }
+  const handleDrop      = useCallback((e) => { e.preventDefault(); setIsDragging(false); processFile(e.dataTransfer.files[0]) }, [processFile])
+  const handleDragOver  = (e) => { e.preventDefault(); setIsDragging(true) }
   const handleDragLeave = () => setIsDragging(false)
+  const handleFileChange = (e) => { processFile(e.target.files[0]); e.target.value = '' }
 
-  const handleFileChange = (e) => {
-    processFile(e.target.files[0])
-    e.target.value = ''
-  }
+  const borderColor = isDragging
+    ? '#cc0000'
+    : status === 'error'
+    ? 'rgba(220,38,38,0.5)'
+    : status === 'success'
+    ? 'rgba(34,197,94,0.3)'
+    : 'rgba(255,255,255,0.1)'
+
+  const bgColor = isDragging
+    ? 'rgba(204,0,0,0.06)'
+    : status === 'success'
+    ? 'rgba(0,30,0,0.3)'
+    : 'rgba(10,0,0,0.8)'
 
   return (
     <div className="space-y-4">
-      {/* Upload Zone */}
+
+      {/* Drop Zone */}
       <div
         onClick={() => fileInputRef.current?.click()}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`relative border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all duration-200 ${
-          isDragging
-            ? 'border-orange-500 bg-orange-500/5 scale-[1.01]'
-            : status === 'error'
-            ? 'border-red-500/50 bg-red-500/5'
-            : status === 'success'
-            ? 'border-green-500/50 bg-green-500/5'
-            : 'border-gray-700 bg-gray-900 hover:border-orange-500/50 hover:bg-gray-800/50'
-        }`}
+        className="relative cursor-pointer transition-all duration-200"
+        style={{
+          border: `1px solid ${borderColor}`,
+          background: bgColor,
+          padding: '48px 32px',
+          transform: isDragging ? 'scale(1.01)' : 'scale(1)',
+        }}
       >
+        {/* Corner accents */}
+        <span className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2" style={{ borderColor: '#cc0000' }} />
+        <span className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2" style={{ borderColor: '#cc0000' }} />
+        <span className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2" style={{ borderColor: '#cc0000' }} />
+        <span className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2" style={{ borderColor: '#cc0000' }} />
+
         <input
           ref={fileInputRef}
           type="file"
@@ -114,25 +122,35 @@ export default function CSVUploader({ onParsed }) {
           id="csv-file-input"
         />
 
-        <div className="flex flex-col items-center gap-4">
-          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl transition-all duration-200 ${
-            isDragging ? 'bg-orange-500/20 scale-110' : 'bg-gray-800'
-          }`}>
-            {status === 'success' ? '✅' : status === 'error' ? '❌' : isDragging ? '📂' : '📄'}
+        <div className="flex flex-col items-center gap-4 text-center">
+          {/* Icon */}
+          <div
+            className="w-14 h-14 flex items-center justify-center text-2xl transition-all duration-200"
+            style={{
+              background: isDragging ? 'rgba(204,0,0,0.2)' : 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              transform: isDragging ? 'scale(1.1)' : 'scale(1)',
+            }}
+          >
+            {status === 'success' ? '✓' : status === 'error' ? '✕' : isDragging ? '📂' : '📄'}
           </div>
 
           {status === 'idle' && (
             <>
               <div>
-                <p className="text-white font-semibold text-lg">Drop your CSV here or click to upload</p>
-                <p className="text-gray-500 text-sm mt-1">Supports .csv files only</p>
+                <p className="text-white font-bold text-base">Drop your CSV here or click to upload</p>
+                <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>Supports .csv files only</p>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="h-px bg-gray-700 w-16" />
-                <span className="text-gray-600 text-sm">or</span>
-                <div className="h-px bg-gray-700 w-16" />
-              </div>
-              <button className="px-5 py-2 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 rounded-lg text-sm font-medium border border-orange-500/30 transition-colors">
+              <button
+                className="mt-1 px-5 py-2 text-xs font-bold tracking-widest uppercase transition-colors"
+                style={{
+                  fontFamily: '"Barlow Condensed", sans-serif',
+                  letterSpacing: '0.18em',
+                  border: '1px solid rgba(204,0,0,0.5)',
+                  color: '#cc0000',
+                  background: 'rgba(204,0,0,0.08)',
+                }}
+              >
                 Browse File
               </button>
             </>
@@ -140,15 +158,22 @@ export default function CSVUploader({ onParsed }) {
 
           {status === 'success' && (
             <div>
-              <p className="text-green-400 font-bold text-xl">{message}</p>
-              <p className="text-gray-500 text-sm mt-1 cursor-pointer hover:text-gray-400">Click to upload a different file</p>
+              <p
+                className="font-black text-lg tracking-wide"
+                style={{ fontFamily: '"Barlow Condensed", sans-serif', color: '#22c55e' }}
+              >
+                ✓ {message}
+              </p>
+              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                Click to upload a different file
+              </p>
             </div>
           )}
 
           {status === 'error' && (
             <div>
-              <p className="text-red-400 font-semibold">{message}</p>
-              <p className="text-gray-500 text-sm mt-1">Click to try a different file</p>
+              <p className="font-semibold text-sm" style={{ color: '#ef4444' }}>{message}</p>
+              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>Click to try a different file</p>
             </div>
           )}
         </div>
@@ -156,33 +181,58 @@ export default function CSVUploader({ onParsed }) {
 
       {/* Preview Table */}
       {status === 'success' && participants.length > 0 && (
-        <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden animate-fade-in">
-          <div className="px-4 py-3 border-b border-gray-800 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-gray-300">Preview (first 5 rows)</h3>
-            <span className="text-xs text-orange-400 font-medium">{participants.length} total</span>
+        <div
+          className="overflow-hidden animate-fade-in"
+          style={{ border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(8,0,0,0.8)' }}
+        >
+          <div
+            className="px-4 py-2.5 flex items-center justify-between"
+            style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+          >
+            <p
+              className="text-xs font-bold tracking-widest uppercase"
+              style={{ fontFamily: '"Barlow Condensed", sans-serif', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em' }}
+            >
+              Preview — first 5 rows
+            </p>
+            <span className="text-xs font-bold" style={{ color: '#cc0000' }}>
+              {participants.length} total
+            </span>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-xs">
               <thead>
-                <tr className="bg-gray-800/50">
-                  <th className="px-4 py-2.5 text-left text-gray-400 font-medium">#</th>
-                  <th className="px-4 py-2.5 text-left text-gray-400 font-medium">Name</th>
-                  <th className="px-4 py-2.5 text-left text-gray-400 font-medium">Bib #</th>
-                  <th className="px-4 py-2.5 text-left text-gray-400 font-medium">Category</th>
+                <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                  {['#', 'Name', 'Bib #', 'Category'].map((h) => (
+                    <th
+                      key={h}
+                      className="px-4 py-2.5 text-left font-bold tracking-widest uppercase"
+                      style={{ fontFamily: '"Barlow Condensed", sans-serif', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.15em' }}
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {participants.slice(0, 5).map((p, i) => (
-                  <tr key={i} className="border-t border-gray-800/50 hover:bg-gray-800/30 transition-colors">
-                    <td className="px-4 py-2.5 text-gray-500">{i + 1}</td>
-                    <td className="px-4 py-2.5 text-white font-medium">{p.name}</td>
-                    <td className="px-4 py-2.5 text-orange-400">{p.bib_number}</td>
-                    <td className="px-4 py-2.5 text-gray-300">{p.category}</td>
+                  <tr
+                    key={i}
+                    style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}
+                  >
+                    <td className="px-4 py-2" style={{ color: 'rgba(255,255,255,0.25)' }}>{i + 1}</td>
+                    <td className="px-4 py-2 font-semibold text-white">{p.name}</td>
+                    <td className="px-4 py-2 font-bold" style={{ color: '#cc0000' }}>{p.bib_number}</td>
+                    <td className="px-4 py-2" style={{ color: 'rgba(255,255,255,0.55)' }}>{p.category}</td>
                   </tr>
                 ))}
                 {participants.length > 5 && (
-                  <tr className="border-t border-gray-800/50">
-                    <td colSpan={4} className="px-4 py-2.5 text-gray-600 text-center italic">
+                  <tr style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+                    <td
+                      colSpan={4}
+                      className="px-4 py-2 italic text-center"
+                      style={{ color: 'rgba(255,255,255,0.2)' }}
+                    >
                       + {participants.length - 5} more participants…
                     </td>
                   </tr>
@@ -193,12 +243,25 @@ export default function CSVUploader({ onParsed }) {
         </div>
       )}
 
-      {/* Expected Format */}
-      <div className="bg-gray-900/50 rounded-xl border border-gray-800 p-4">
-        <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Expected CSV Format</p>
-        <p className="text-xs text-gray-600 mb-2">Required: <span className="text-orange-400">name</span> · Optional: bib_number, category</p>
-        <div className="bg-gray-950 rounded-lg p-3 font-mono text-xs text-gray-400">
-          <div className="text-orange-400">name,bib_number,category</div>
+      {/* Format Guide */}
+      <div
+        className="p-4"
+        style={{ background: 'rgba(8,0,0,0.6)', border: '1px solid rgba(255,255,255,0.06)' }}
+      >
+        <p
+          className="text-xs font-bold tracking-widest uppercase mb-2"
+          style={{ fontFamily: '"Barlow Condensed", sans-serif', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.2em' }}
+        >
+          Expected CSV Format
+        </p>
+        <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.3)' }}>
+          Required: <span style={{ color: '#cc0000' }}>name</span> · Optional: bib_number, category
+        </p>
+        <div
+          className="p-3 font-mono text-xs"
+          style={{ background: 'rgba(0,0,0,0.6)', color: 'rgba(255,255,255,0.4)' }}
+        >
+          <div style={{ color: '#cc0000' }}>name,bib_number,category</div>
           <div>Aditya Kumar,001,10K Run</div>
           <div>Priya Nair,002,5K Run</div>
           <div>Rahul Sharma,003,Half Marathon</div>
@@ -206,7 +269,8 @@ export default function CSVUploader({ onParsed }) {
         <a
           href="/sample_participants.csv"
           download
-          className="inline-flex items-center gap-1.5 mt-3 text-xs text-orange-400 hover:text-orange-300 transition-colors font-medium"
+          className="inline-flex items-center gap-1.5 mt-3 text-xs font-bold tracking-wider transition-colors hover:opacity-70"
+          style={{ color: '#cc0000', letterSpacing: '0.1em' }}
         >
           ↓ Download sample CSV
         </a>
