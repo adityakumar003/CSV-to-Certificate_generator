@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Awaara Run Club — Certificate Generator
+
+A 100% browser-based tool for generating beautiful participation certificates for running events.
+
+**Live Demo**: [Deploy on Vercel]
+
+Built by **Aditya Kumar** · adityakumar8303000000@gmail.com
+
+---
+
+## Features
+
+- 📄 **CSV Upload** — Drag & drop your participants CSV file
+- 🎨 **3 Certificate Templates** — Classic (gold), Bold (orange/dark), Minimal (clean white)
+- 🖼️ **Canvas Rendering** — High-resolution 1400×990px PNG certificates
+- 📦 **ZIP Download** — Download all certificates as a single ZIP file
+- 📱 **Mobile Responsive** — Works on all screen sizes
+- 🔒 **100% Browser-based** — No data leaves your device, no backend needed
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Styling**: Tailwind CSS
+- **CSV Parsing**: PapaParse
+- **Certificate Rendering**: HTML5 Canvas API
+- **Font Loading**: FontFace API (Montserrat from Google Fonts)
+- **Bulk Download**: JSZip + FileSaver.js
+
+## CSV Format
+
+```csv
+name,bib_number,category
+Aditya Kumar,001,10K Run
+Priya Nair,002,5K Run
+Rahul Sharma,003,Half Marathon
+```
+
+**Required column**: `name`  
+**Optional columns**: `bib_number` (auto-generated if missing), `category` (defaults to "Finisher")
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Deploy to Vercel with one click:
 
-## Learn More
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
-To learn more about Next.js, take a look at the following resources:
+No environment variables required — it's 100% frontend.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+[Built for Digital Heroes](https://digitalheroesco.com) · © 2025 Awaara Run Club
